@@ -38,6 +38,8 @@ import * as navigation from './navigation';
 import * as navigationLink from './navigation-link';
 import * as latestComments from './latest-comments';
 import * as latestPosts from './latest-posts';
+import * as legacyWidget from './legacy-widget';
+import * as logInOut from './loginout';
 import * as list from './list';
 import * as missing from './missing';
 import * as more from './more';
@@ -52,9 +54,8 @@ import * as group from './group';
 import * as separator from './separator';
 import * as shortcode from './shortcode';
 import * as spacer from './spacer';
-import * as subhead from './subhead';
 import * as table from './table';
-import * as tableOfContents from './table-of-contents';
+// import * as tableOfContents from './table-of-contents';
 import * as textColumns from './text-columns';
 import * as verse from './verse';
 import * as video from './video';
@@ -70,6 +71,7 @@ import * as siteTitle from './site-title';
 import * as templatePart from './template-part';
 import * as query from './query';
 import * as queryLoop from './query-loop';
+import * as queryTitle from './query-title';
 import * as queryPagination from './query-pagination';
 import * as queryPaginationNext from './query-pagination-next';
 import * as queryPaginationNumbers from './query-pagination-numbers';
@@ -85,11 +87,13 @@ import * as postCommentDate from './post-comment-date';
 import * as postComments from './post-comments';
 import * as postCommentsCount from './post-comments-count';
 import * as postCommentsForm from './post-comments-form';
+import * as postCommentsLink from './post-comments-link';
 import * as postDate from './post-date';
 import * as postExcerpt from './post-excerpt';
 import * as postFeaturedImage from './post-featured-image';
 import * as postHierarchicalTerms from './post-hierarchical-terms';
 import * as postTags from './post-tags';
+import * as termDescription from './term-description';
 
 /**
  * Function to register an individual block.
@@ -161,9 +165,8 @@ export const __experimentalGetCoreBlocks = () => [
 	socialLinks,
 	socialLink,
 	spacer,
-	subhead,
 	table,
-	tableOfContents,
+	// tableOfContents,
 	tagCloud,
 	textColumns,
 	verse,
@@ -208,10 +211,13 @@ export const registerCoreBlocks = (
  */
 export const __experimentalRegisterExperimentalCoreBlocks =
 	process.env.GUTENBERG_PHASE === 2
-		? ( enableFSEBlocks ) => {
+		? ( { enableLegacyWidgetBlock, enableFSEBlocks } = {} ) => {
 				[
 					navigation,
 					navigationLink,
+
+					// Register Legacy Widget block.
+					...( enableLegacyWidgetBlock ? [ legacyWidget ] : [] ),
 
 					// Register Full Site Editing Blocks.
 					...( enableFSEBlocks
@@ -222,10 +228,12 @@ export const __experimentalRegisterExperimentalCoreBlocks =
 								templatePart,
 								query,
 								queryLoop,
+								queryTitle,
 								queryPagination,
 								queryPaginationNext,
 								queryPaginationNumbers,
 								queryPaginationPrevious,
+								logInOut,
 								postTitle,
 								postContent,
 								postAuthor,
@@ -236,12 +244,14 @@ export const __experimentalRegisterExperimentalCoreBlocks =
 								postComments,
 								postCommentsCount,
 								postCommentsForm,
+								postCommentsLink,
 								postDate,
 								postExcerpt,
 								postFeaturedImage,
 								postHierarchicalTerms,
 								postTags,
 								postNavigationLink,
+								termDescription,
 						  ]
 						: [] ),
 				].forEach( registerBlock );

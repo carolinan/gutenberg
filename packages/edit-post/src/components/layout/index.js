@@ -18,12 +18,7 @@ import {
 	BlockBreadcrumb,
 	__experimentalLibrary as Library,
 } from '@wordpress/block-editor';
-import {
-	Button,
-	ScrollLock,
-	Popover,
-	__unstableUseDrop as useDrop,
-} from '@wordpress/components';
+import { Button, ScrollLock, Popover } from '@wordpress/components';
 import {
 	useViewportMatch,
 	__experimentalUseDialog as useDialog,
@@ -36,7 +31,7 @@ import {
 	InterfaceSkeleton,
 	store as interfaceStore,
 } from '@wordpress/interface';
-import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { close } from '@wordpress/icons';
 import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 
@@ -95,6 +90,7 @@ function Layout( { styles } ) {
 		hasReducedUI,
 		showBlockBreadcrumbs,
 	} = useSelect( ( select ) => {
+		const editorSettings = select( 'core/editor' ).getEditorSettings();
 		return {
 			hasFixedToolbar: select( editPostStore ).isFeatureActive(
 				'fixedToolbar'
@@ -112,8 +108,7 @@ function Layout( { styles } ) {
 			),
 			isInserterOpened: select( editPostStore ).isInserterOpened(),
 			mode: select( editPostStore ).getEditorMode(),
-			isRichEditingEnabled: select( 'core/editor' ).getEditorSettings()
-				.richEditingEnabled,
+			isRichEditingEnabled: editorSettings.richEditingEnabled,
 			hasActiveMetaboxes: select( editPostStore ).hasMetaBoxes(),
 			previousShortcut: select(
 				keyboardShortcutsStore
@@ -172,9 +167,6 @@ function Layout( { styles } ) {
 		},
 		[ entitiesSavedStatesCallback ]
 	);
-	const ref = useRef();
-
-	useDrop( ref );
 	const [ inserterDialogRef, inserterDialogProps ] = useDialog( {
 		onClose: () => setIsInserterOpened( false ),
 	} );
@@ -190,7 +182,6 @@ function Layout( { styles } ) {
 			<EditorKeyboardShortcutsRegister />
 			<SettingsSidebar />
 			<InterfaceSkeleton
-				ref={ ref }
 				className={ className }
 				labels={ interfaceLabels }
 				header={

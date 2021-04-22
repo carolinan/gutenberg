@@ -152,6 +152,15 @@ function InsertionPointPopover( {
 			? nextElement.getBoundingClientRect()
 			: null;
 		if ( orientation === 'vertical' ) {
+			if ( isRTL() ) {
+				return {
+					top: previousRect.bottom,
+					left: previousRect.right,
+					right: previousRect.left,
+					bottom: nextRect ? nextRect.top : previousRect.bottom,
+				};
+			}
+
 			return {
 				top: previousRect.bottom,
 				left: previousRect.left,
@@ -200,6 +209,18 @@ function InsertionPointPopover( {
 		}
 	}
 
+	// Only show the inserter when there's a `nextElement` (a block after the
+	// insertion point). At the end of the block list the trailing appender
+	// should serve the purpose of inserting blocks.
+	const showInsertionPointInserter =
+		! isHidden && nextElement && ( isInserterShown || isInserterForced );
+
+	// Show the indicator if the insertion point inserter is visible, or if
+	// the `showInsertionPoint` state is `true`. The latter is generally true
+	// when hovering blocks for insertion in the block library.
+	const showInsertionPointIndicator =
+		showInsertionPointInserter || ( ! isHidden && showInsertionPoint );
+
 	/* eslint-disable jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
 	// While ideally it would be enough to capture the
 	// bubbling focus event from the Inserter, due to the
@@ -221,16 +242,15 @@ function InsertionPointPopover( {
 				tabIndex={ -1 }
 				onClick={ onClick }
 				onFocus={ onFocus }
-				className={ className }
+				className={ classnames( className, {
+					'is-with-inserter': showInsertionPointInserter,
+				} ) }
 				style={ style }
 			>
-				{ ! isHidden &&
-					( showInsertionPoint ||
-						isInserterShown ||
-						isInserterForced ) && (
-						<div className="block-editor-block-list__insertion-point-indicator" />
-					) }
-				{ ! isHidden && ( isInserterShown || isInserterForced ) && (
+				{ showInsertionPointIndicator && (
+					<div className="block-editor-block-list__insertion-point-indicator" />
+				) }
+				{ showInsertionPointInserter && (
 					<InsertionPointInserter
 						rootClientId={ rootClientId }
 						clientId={ nextClientId }
@@ -306,9 +326,11 @@ export default function useInsertionPoint( ref ) {
 			const children = Array.from( event.target.children );
 			const nextElement = children.find( ( blockEl ) => {
 				return (
-					( orientation === 'vertical' &&
+					( blockEl.classList.contains( 'wp-block' ) &&
+						orientation === 'vertical' &&
 						blockEl.offsetTop > offsetTop ) ||
-					( orientation === 'horizontal' &&
+					( blockEl.classList.contains( 'wp-block' ) &&
+						orientation === 'horizontal' &&
 						blockEl.offsetLeft > offsetLeft )
 				);
 			} );
