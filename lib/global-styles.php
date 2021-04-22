@@ -93,6 +93,7 @@ function gutenberg_experimental_global_styles_settings( $settings ) {
 	unset( $settings['enableCustomLineHeight'] );
 	unset( $settings['enableCustomUnits'] );
 	unset( $settings['enableCustomSpacing'] );
+	unset( $settings['letterSpacing'] );
 	unset( $settings['fontSizes'] );
 	unset( $settings['gradients'] );
 

@@ -138,6 +138,7 @@
 				"customFontWeight": true,
 				"customTextTransforms": true,
 				"customTextDecorations": true,
+				"letterSpacing": true,
 				"fontSizes": [
 					{
 						"name": "Small",

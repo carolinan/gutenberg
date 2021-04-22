@@ -92,6 +92,7 @@ class WP_Theme_JSON {
 			'lineHeight'     => null,
 			'textDecoration' => null,
 			'textTransform'  => null,
+			'letterSpacing'  => null,
 		),
 	);
 
@@ -123,6 +124,7 @@ class WP_Theme_JSON {
 			'customFontWeight'      => null,
 			'customTextDecorations' => null,
 			'customTextTransforms'  => null,
+			'letterSpacing'         => null,
 		),
 		'custom'     => null,
 		'layout'     => null,
@@ -267,6 +269,9 @@ class WP_Theme_JSON {
 		),
 		'text-transform'           => array(
 			'value' => array( 'typography', 'textTransform' ),
+		),
+		'letter-spacing'           => array(
+			'value' => array( 'typography', 'letterSpacing' ),
 		),
 	);
 
@@ -1110,15 +1115,17 @@ class WP_Theme_JSON {
 					if ( isset( $preset_metadata['classes'] ) && count( $preset_metadata['classes'] ) > 0 ) {
 						$single_preset_is_valid = true;
 						foreach ( $preset_metadata['classes'] as $class_meta_data ) {
-							$property = $class_meta_data['property_name'];
-							if ( ! self::is_safe_css_declaration( $property, $value ) ) {
+							$property          = $class_meta_data['property_name'];
+							$style_to_validate = $property . ': ' . $value;
+							if ( esc_html( safecss_filter_attr( $style_to_validate ) ) !== $style_to_validate ) {
 								$single_preset_is_valid = false;
 								break;
 							}
 						}
 					} else {
 						$property               = $preset_metadata['css_var_infix'];
-						$single_preset_is_valid = self::is_safe_css_declaration( $property, $value );
+						$style_to_validate      = $property . ': ' . $value;
+						$single_preset_is_valid = esc_html( safecss_filter_attr( $style_to_validate ) ) === $style_to_validate;
 					}
 					if ( $single_preset_is_valid ) {
 						$escaped_preset[] = $single_preset;
@@ -1146,7 +1153,8 @@ class WP_Theme_JSON {
 		$output       = array();
 		$declarations = self::compute_style_properties( array(), $input );
 		foreach ( $declarations as $declaration ) {
-			if ( self::is_safe_css_declaration( $declaration['name'], $declaration['value'] ) ) {
+			$style_to_validate = $declaration['name'] . ': ' . $declaration['value'];
+			if ( esc_html( safecss_filter_attr( $style_to_validate ) ) === $style_to_validate ) {
 				$property = self::to_property( $declaration['name'] );
 				$path     = self::PROPERTIES_METADATA[ $property ]['value'];
 				if ( self::has_properties( self::PROPERTIES_METADATA[ $property ] ) ) {
@@ -1157,19 +1165,6 @@ class WP_Theme_JSON {
 			}
 		}
 		return $output;
-	}
-
-	/**
-	 * Checks that a declaration provided by the user is safe.
-	 *
-	 * @param string $property_name Property name in a CSS declaration, i.e. the `color` in `color: red`.
-	 * @param string $property_value Value in a CSS declaration, i.e. the `red` in `color: red`.
-	 * @return boolean
-	 */
-	private static function is_safe_css_declaration( $property_name, $property_value ) {
-		$style_to_validate = $property_name . ': ' . $property_value;
-		$filtered          = esc_html( safecss_filter_attr( $style_to_validate ) );
-		return ! empty( trim( $filtered ) );
 	}
 
 	/**

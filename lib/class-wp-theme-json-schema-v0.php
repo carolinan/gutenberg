@@ -85,6 +85,7 @@ class WP_Theme_JSON_Schema_V0 implements WP_Theme_JSON_Schema {
 				'lineHeight'     => null,
 				'textDecoration' => null,
 				'textTransform'  => null,
+				'letterSpacing'  => null,
 			),
 		),
 		'settings'        => array(
@@ -115,6 +116,7 @@ class WP_Theme_JSON_Schema_V0 implements WP_Theme_JSON_Schema {
 				'customFontWeight'      => null,
 				'customTextDecorations' => null,
 				'customTextTransforms'  => null,
+				'letterSpacing'         => null,
 			),
 			'custom'     => null,
 			'layout'     => null,
